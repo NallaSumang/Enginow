@@ -1,6 +1,5 @@
 __pycache__/
 *.py[cod]
 *$py.class
-models/
 .ipynb_checkpoints/
 confusion_matrix.png
