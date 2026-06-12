@@ -1,13 +1,23 @@
 import streamlit as st
 import joblib
 import pandas as pd
+import os
+import sys
+
+# Ensure Python can find data_preprocessing.py even if Streamlit sets CWD to repo root
+current_dir = os.path.dirname(os.path.abspath(__file__))
+if current_dir not in sys.path:
+    sys.path.append(current_dir)
+
 from data_preprocessing import preprocess_text
 
 # Load models safely
 @st.cache_resource
 def load_models():
-    model = joblib.load('models/emotion_classifier.pkl')
-    vectorizer = joblib.load('models/tfidf_vectorizer.pkl')
+    model_path = os.path.join(current_dir, 'models', 'emotion_classifier.pkl')
+    vectorizer_path = os.path.join(current_dir, 'models', 'tfidf_vectorizer.pkl')
+    model = joblib.load(model_path)
+    vectorizer = joblib.load(vectorizer_path)
     return model, vectorizer
 
 def main():
