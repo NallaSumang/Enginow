@@ -17,6 +17,15 @@ An end-to-end Natural Language Processing (NLP) pipeline that analyzes text to p
 
 ---
 
+### [Project 2: Image Classification Using Convolutional Neural Networks (CNNs)](./Project%202)
+**Status:** ✅ Completed  
+**Tech Stack:** Python, TensorFlow, Keras, NumPy
+
+**Description:**  
+A lightweight image classification pipeline using a Convolutional Neural Network (CNN) on the MNIST dataset. The project demonstrates the construction, training, and evaluation of a minimal sequential model optimized for speed and low memory usage, achieving high accuracy in very few epochs.
+
+---
+
 ## 🚀 How to Navigate
 - Click on any project folder above to dive into its specific implementation.
 - Each project folder contains the fully executable scripts, models, and notebooks required to run the code locally.
