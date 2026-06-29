@@ -1,27 +1,33 @@
+import os
+
+# Combined app.py: Includes both application logic and auto-downloading for the NLP model
 app_code = """
 import streamlit as st
 import PyPDF2
 import spacy
 import pandas as pd
 import re
+import os
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-# Page configuration
+# --- 1. SETTINGS & MODEL LOADING ---
 st.set_page_config(page_title='AI Resume Screener', page_icon='🔍', layout='wide')
 
-# Load NLP model with caching for performance
 @st.cache_resource
-def load_nlp():
+def load_nlp_model():
+    \"\"\"Ensures the SpaCy model is available in the environment.\"\"\"
+    model_name = 'en_core_web_sm'
     try:
-        return spacy.load('en_core_web_sm')
-    except:
-        import os
-        os.system('python -m spacy download en_core_web_sm')
-        return spacy.load('en_core_web_sm')
+        return spacy.load(model_name)
+    except OSError:
+        # Download the model if not found (crucial for Cloud deployment)
+        os.system(f'python -m spacy download {model_name}')
+        return spacy.load(model_name)
 
-nlp = load_nlp()
+nlp = load_nlp_model()
 
+# --- 2. HELPER FUNCTIONS ---
 def extract_text_from_pdf(file):
     pdf_reader = PyPDF2.PdfReader(file)
     text = ''
@@ -37,53 +43,63 @@ def preprocess_text(text):
     tokens = [token.lemma_ for token in doc if not token.is_stop and not token.is_punct]
     return ' '.join(tokens)
 
+# --- 3. UI LAYOUT ---
 st.title('🤖 AI-Powered Resume Ranking System')
-st.info('Upload candidate resumes and provide a job description to find the best fit.')
+st.markdown('### Project 3: NLP Deployment')
 
-# Sidebar Inputs
 with st.sidebar:
-    st.header('Configuration')
-    jd_input = st.text_area('Target Job Description:', height=250, placeholder='Paste JD here...')
-    uploaded_files = st.file_uploader('Upload Resumes (PDF only)', type=['pdf'], accept_multiple_files=True)
+    st.header('Settings')
+    jd_input = st.text_area('Target Job Description:', height=200, placeholder='Paste your JD here...')
+    uploaded_files = st.file_uploader('Upload Candidate Resumes (PDF)', type=['pdf'], accept_multiple_files=True)
 
-# Main Execution
+# --- 4. EXECUTION LOGIC ---
 if st.button('🚀 Rank Candidates'):
     if jd_input and uploaded_files:
-        with st.spinner('Analyzing resumes...'):
+        with st.spinner('Analyzing candidates...'):
             resumes_data = []
             for file in uploaded_files:
                 text = extract_text_from_pdf(file)
                 resumes_data.append({'name': file.name, 'text': text})
 
-            # NLP Pipeline
+            # Process text
             processed_jd = preprocess_text(jd_input)
             processed_resumes = [preprocess_text(r['text']) for r in resumes_data]
 
-            # Vectorization and Similarity
-            all_texts = [processed_jd] + processed_resumes
+            # TF-IDF & Cosine Similarity
             vectorizer = TfidfVectorizer()
-            tfidf_matrix = vectorizer.fit_transform(all_texts)
+            tfidf_matrix = vectorizer.fit_transform([processed_jd] + processed_resumes)
             
-            # Similarity of JD (index 0) vs Resumes (index 1+)
+            # First row is JD, subsequent rows are resumes
             scores = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:]).flatten()
 
-            # Prepare Results
+            # Presentation
             results = pd.DataFrame({
                 'Candidate Name': [r['name'] for r in resumes_data],
-                'Match Score (%)': [round(s * 100, 2) for s in scores]
-            }).sort_values(by='Match Score (%)', ascending=False)
+                'Match Percentage (%)': [round(s * 100, 2) for s in scores]
+            }).sort_values(by='Match Percentage (%)', ascending=False)
 
-            st.subheader('📊 Top Matches')
+            st.subheader('📊 Top Matching Candidates')
             st.dataframe(results, use_container_width=True)
             
-            # Visual highlight
-            top_candidate = results.iloc[0]['Candidate Name']
-            st.success(f'**Recommended Candidate:** {top_candidate}')
+            if not results.empty:
+                st.success(f'**Best Fit Identified:** {results.iloc[0]["Candidate Name"]}')
     else:
-        st.warning('Please provide both the Job Description and Resume files.')
+        st.warning('Please provide a Job Description and at least one Resume.')
 """
 
 with open('app.py', 'w') as f:
     f.write(app_code.strip())
 
-print('✅ Production-ready app.py created. Download it from the sidebar.')
+# Updated requirements.txt (No tensorflow to avoid errors)
+requirements_content = """
+streamlit
+PyPDF2
+spacy
+pandas
+scikit-learn
+"""
+
+with open('requirements.txt', 'w') as f:
+    f.write(requirements_content.strip())
+
+print('✅ Combined app.py and requirements.txt are ready for download.')
