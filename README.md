@@ -1,8 +1,8 @@
-# Enginow Internship Projects
+# AI & Machine Learning Projects Portfolio
 
-Welcome to my repository for the **Enginow Internship**! 
+Welcome to my AI & Machine Learning portfolio!
 
-This repository serves as a centralized portfolio for all the tasks, projects, and assignments completed during my internship. Each project is organized into its own dedicated folder with its own source code, datasets, and documentation.
+This repository serves as a centralized collection of my machine learning, deep learning, and natural language processing projects. Each project is organized into its own dedicated folder with its own source code, datasets, and documentation.
 
 ---
 
@@ -26,6 +26,15 @@ A lightweight image classification pipeline using a Convolutional Neural Network
 
 ---
 
+### [Project 3: AI-Powered Resume Ranking System](./Project%203)
+**Status:** ✅ Completed  
+**Tech Stack:** Python, Streamlit, SpaCy, Scikit-Learn, PyPDF2, Pandas
+
+**Description:**  
+An interactive NLP application built with Streamlit that automatically screens and ranks candidate resumes against a target job description. It extracts text from PDF files, performs text preprocessing with SpaCy, and computes the Cosine Similarity between resumes and the job description using TF-IDF vectorization to identify the best fit.
+
+---
+
 ## 🚀 How to Navigate
 - Click on any project folder above to dive into its specific implementation.
 - Each project folder contains the fully executable scripts, models, and notebooks required to run the code locally.
@@ -33,8 +42,9 @@ A lightweight image classification pipeline using a Convolutional Neural Network
 ## 🛠️ General Setup
 If you want to clone this repository and run the projects locally, you will generally need Python installed along with the following libraries:
 ```bash
-pip install pandas numpy scikit-learn nltk matplotlib seaborn jupyter joblib datasets
+pip install pandas numpy scikit-learn nltk matplotlib seaborn jupyter joblib datasets tensorflow streamlit spacy PyPDF2
+python -m spacy download en_core_web_sm
 ```
 
 ---
-*More projects will be added to this repository as the internship progresses.*
+*More projects will be added to this repository over time.*
